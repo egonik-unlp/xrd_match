@@ -22,16 +22,15 @@ def filter_Zr():
     """
     Filter out structures with Zr
     """
-    
-    # os.chdir("")
     structure = load_data("2019-07-01-FSR-public_7061.csv")
-    return [f"{row.filename}.cif" for n,row in df.iterrows() if "Zr" in row["All_Metals"]]
+    return [f"{row.filename}.cif" for n,row in structure.iterrows() if "Zr" in row["All_Metals"]]
 
 
 
 
 def main(filter = True):
     os.chdir("data")
+    print(os.getcwd())
     maxes=set()
     patterns = {}
     if filter:
@@ -44,12 +43,13 @@ def main(filter = True):
             xrd = calculator.get_pattern(structure)
         except Exception as e :
             print(e)
+            continue
         maxes.add(xrd.y.max())
         patterns[file]= xrd.x,xrd.y
     print(maxes)
     with open("diffraction_patterns.json","w") as file:
         json.dump(patterns,file)
-
+    return filenames
 
 if __name__ == "__main__":
-    main()
+    fn = main()
