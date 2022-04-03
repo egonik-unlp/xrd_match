@@ -1,3 +1,5 @@
+
+from timeout import timeout
 import os
 import json
 import numpy as np
@@ -30,6 +32,15 @@ def filter_Zr():
     structure = load_data("2019-07-01-FSR-public_7061.csv")
     return [f"{row.filename}.cif" for n,row in df.iterrows() if "Zr" in row["All_Metals"]]
 
+@timeout(60)
+def process_one_file(file):
+    structure = CifParser(file).get_structures()[0]
+    return calculator.get_pattern(structure)
+
+
+
+
+
 
 def main(filter=0):
     os.chdir("data")
@@ -38,18 +49,17 @@ def main(filter=0):
     else:
         filenames=os.listdir()
     maxes=set()
-    # patterns = {}
+    patterns = {}
     for file in tqdm(filenames):
         try: 
-            structure = CifParser(file).get_structures()[0]
-            xrd = calculator.get_pattern(structure)
+           xrd = process_one_file(file)
         except Exception as e :
             print(e)
             continue
         maxes.add(xrd.y.max())
-        with open(f"independant_patterns/{file}.json","w") as f:
-            json.dump(xrd.to_dict(),f)
-        # patterns[file]= xrd.x.tolist(),xrd.y.tolist()
+        # with open(f"independant_patterns/{file}.json","w") as f:
+            # json.dump(xrd.to_dict(),f)
+        patterns[file]= xrd.x.tolist(),xrd.y.tolist()
 
     print(maxes)
 

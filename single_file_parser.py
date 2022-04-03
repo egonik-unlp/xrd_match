@@ -5,10 +5,24 @@ from pymatgen.core.structure import Structure
 from pymatgen.analysis.diffraction.xrd import XRDCalculator
 import sys
 import json
+from datetime import datetime
+
+class TimeoutError(Exception):
+    pass
+
+
+
+
+
+
+
+
+
 
 
 def main(file):
     try:
+        start = datetime.now()
         print("file = {}".format(file))
         structure = CifParser(file).get_structures()[0]
         xrd = XRDCalculator().get_pattern(structure)
