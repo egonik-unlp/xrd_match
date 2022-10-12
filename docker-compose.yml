@@ -3,9 +3,9 @@ services:
   xrdmatch:
     build: .
     volumes:
-      - /home/gonik/Desktop:/home/output:rw
+      - /home/gonik/Desktop/output:/home/julio/output:rw
 
 
   #### Obviamente hay que cambiar el path en la computadora local según corresponda
-  
+
     
