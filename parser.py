@@ -32,10 +32,12 @@ def filter_Zr():
     structure = load_data("2019-07-01-FSR-public_7061.csv")
     return [f"{row.filename}.cif" for n,row in df.iterrows() if "Zr" in row["All_Metals"]]
 
-@timeout(60)
+@timeout(600)
 def process_one_file(file):
     structure = CifParser(file).get_structures()[0]
-    return calculator.get_pattern(structure)
+    return calculator.get_pattern(structure,
+                                 two_theta_range = (4, 40)  
+                                 )
 
 
 
@@ -63,7 +65,7 @@ def main(filter=0):
 
     print(maxes)
 
-    with open("patterns.json","w") as file:
+    with open("patterns_{}.json".format(600),"w") as file:
         json.dump(patterns,file)
     return filenames, patterns
 
