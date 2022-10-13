@@ -3,6 +3,7 @@ using Peaks
 using OrderedCollections
 using DataFrames
 using LaTeXStrings
+using SmoothingSplines
 using StatsBase
 using MultivariateStats
 using SharedArrays
@@ -31,7 +32,8 @@ function distributed_build_interpolated_data(grilla, vals)
 			argmin(col)
 		end
 		y_int[idxs] = y
-		V[n,:] = y_int
+		spl = fit(SmoothingSpline, grilla, y_int, .5)
+		V[n,:] = predict(spl)
 		n += 1
 		n % 100 == 0 && @info "Iteracion $n"
 	end
@@ -52,4 +54,4 @@ data["target.cif"] = tgt_pattern.theta, tgt_pattern.int
 grid, vals = build_grid_return_vals(data)
 vals = vals[begin:20]
 MatrizEspectros = distributed_build_interpolated_data(grid, vals )
-save("output/espectros.jld2", Dict(:datos_espectros_interpolados => MatrizEspectros) )
+save("output/espectros.jld2", Dict(:datos_espectros_interpolados => MatrizEspectros, :grid => grid, :valores_pre_interpolacion => vals) )
